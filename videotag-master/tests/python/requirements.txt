@@ -1,0 +1,5 @@
+api.video==1.4.7
+python-dateutil==2.9.0.post0
+setuptools==75.8.0
+six==1.17.0
+urllib3==2.3.0

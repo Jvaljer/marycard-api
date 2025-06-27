@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <InvariantGlobalization>false</InvariantGlobalization>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.12">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="ShopifySharp" Version="6.21.0" />
+        <PackageReference Include="ShopifySharp.Extensions.DependencyInjection" Version="1.7.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AnalyticsModule\AnalyticsModule.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\JobModule\JobModule.csproj" />
+      <ProjectReference Include="..\OrderModule\OrderModule.csproj" />
+      <ProjectReference Include="..\VideoModule\VideoModule.csproj" />
+      <ProjectReference Include="..\AuthModule\AuthModule.csproj" />
+      <ProjectReference Include="..\InventoryModule\InventoryModule.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Shared\VideoComponent.razor" />
+      <_ContentIncludedByDefault Remove="Shared\VideoUploader.razor" />
+      <_ContentIncludedByDefault Remove="Pages\DeleteVideo.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\LockVideo.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Video.cshtml" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-144x144.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-192x192.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-36x36.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-48x48.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-72x72.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\android-icon-96x96.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-114x114.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-120x120.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-144x144.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-152x152.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-180x180.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-57x57.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-60x60.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-72x72.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-76x76.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon-precomposed.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\apple-icon.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\browserconfig.xml" />
+      <_ContentIncludedByDefault Remove="wwwroot\favicon-16x16.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\favicon-32x32.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\favicon-96x96.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />
+      <_ContentIncludedByDefault Remove="wwwroot\loading.gif" />
+      <_ContentIncludedByDefault Remove="wwwroot\manifest.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\marycard.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\ms-icon-144x144.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\ms-icon-150x150.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\ms-icon-310x310.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\ms-icon-70x70.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\style.css" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,117 @@
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  APP_RUNTIME: "win-x86"
+
+stages:
+  - lint
+  - build
+  - deploy
+
+dotnet_format:
+  stage: lint
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  script:
+    - sed -i "s|%GITLAB_PACKAGE_REGISTRY_PASSWORD%|${CI_JOB_TOKEN}|g" NuGet.config
+    - dotnet restore .
+    - dotnet format --verify-no-changes
+  only:
+    - merge_requests
+
+dart_format:
+  stage: lint
+  image: dart:3.6.0
+  script:
+    - cd tests
+    - dart --version
+    - dart format --set-exit-if-changed .
+  only:
+    - merge_requests
+
+dart_analyze:
+  stage: lint
+  image: dart:stable
+  before_script:
+    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "git@gitlab.com:"
+  script:
+    - cd tests
+    - dart pub get
+    - dart analyze
+  only:
+    - merge_requests
+
+doctor_build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  before_script:
+    - mkdir -p build-doctor
+    - cp VideoTag/appsettings.json build-doctor/
+  script:
+    - sed -i "s|%GITLAB_PACKAGE_REGISTRY_PASSWORD%|${CI_JOB_TOKEN}|g" NuGet.config
+    - dotnet restore .
+    - dotnet build Doctor --configuration Release -warnaserror -o build-doctor
+  artifacts:
+    name: "doctor-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build-doctor
+  only:
+    - merge_requests
+    - dev
+    - master
+    - tags
+
+dotnet_build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  before_script:
+    - mkdir -p build
+  script:
+    - sed -i "s|%GITLAB_PACKAGE_REGISTRY_PASSWORD%|${CI_JOB_TOKEN}|g" NuGet.config
+    - dotnet restore .
+    - dotnet publish VideoTag/VideoTag.csproj -c Release --runtime ${APP_RUNTIME} --no-self-contained -warnaserror -o build
+  artifacts:
+    name: "backend-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build
+  only:
+    - merge_requests
+    - dev
+    - master
+    - tags
+
+# General deploy job for backend
+.deploy-backend:
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  dependencies:
+    - dotnet_build
+    - doctor_build
+  before_script:
+    - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+    - apt-get update && apt-get install -y zip
+    - pushd build
+    - zip -r ../publish.zip .
+    - popd
+    - az login --service-principal -u ${AZURE_SP_ID} -p ${AZURE_SP_SECRET} --tenant ${AZURE_TENANT}
+    - IP=`curl -s https://api.ipify.org/`
+    - az sql server firewall-rule create --resource-group ${AZURE_DB_RG} --server ${AZURE_DB_SERVER} --name Gitlab-Runner --start-ip-address ${IP} --end-ip-address ${IP}
+    - export ASPNETCORE_ENVIRONMENT=${DOTNET_ENV}
+  script:
+    - ./build-doctor/Doctor -f "./build-doctor/appsettings.json" -i
+    - az webapp deploy --clean true --resource-group ${AZURE_RG} --name ${AZURE_APPSERVICE} --src-path publish.zip --type zip
+    - echo "Deployed to https://${AZURE_APPSERVICE}.azurewebsites.net"
+  after_script:
+    - az sql server firewall-rule delete --resource-group ${AZURE_DB_RG} --server ${AZURE_DB_SERVER} --name Gitlab-Runner
+
+deploy-backend-dev:
+  extends: .deploy-backend
+  stage: deploy
+  environment: dev/backend
+  only:
+    - master
+
+deploy-backend-prod:
+  extends: .deploy-backend
+  stage: deploy
+  environment: prod/backend
+  when: manual
+  only:
+    - tags
